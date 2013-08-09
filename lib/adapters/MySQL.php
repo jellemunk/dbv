@@ -100,4 +100,14 @@ class DBV_Adapter_MySQL extends DBV_Adapter_PDO
     public function setRevision($revision, $commit){
         $this->query("INSERT INTO " . DB_REVISION_TABLE . " (commit, revision) VALUES ('" . $commit . "'," . $revision . ")");
     }
+
+   
+    public function installRevisionTable(){
+        $this->query("CREATE TABLE IF NOT EXISTS `" . DB_REVISION_TABLE . "` (
+                      `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+                      `commit` varchar(255) DEFAULT NULL,
+                      `revision` int(11) DEFAULT NULL,
+                      PRIMARY KEY (`id`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+    }
 }
