@@ -24,7 +24,7 @@ require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib/functions.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'DBV.php';
 
 $dbv = DBV::instance();
-if(!file_exists(DBV_ROOT_PATH . DS . DBV_PROJECT_PATH . DS . $_GET['project'] . DS . 'configuration.php')){
+if(!file_exists(DBV_ROOT_PATH . DS . DBV_BEFORE_PROJECT_PATH . $_GET['project'] . DS . DBV_AFTER_PROJECT_PATH . 'configuration.php')){
 	die("No valid project name\n");
 }
 
