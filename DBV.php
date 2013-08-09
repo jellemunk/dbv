@@ -95,7 +95,7 @@ class DBV
 
     public function indexAction()
     {
-        if ($this->_getAdapter()) {
+        if ($this->_getAdapter() && $this->_getProject()) {
             $this->schema = $this->_getSchema();
             $this->revisions = $this->_getRevisions();
             $this->revision = $this->_getCurrentRevision();
@@ -327,6 +327,12 @@ class DBV
         return $this->_action;
     }
 
+    protected function _getProject()
+    {
+        $project = isset($_GET['project']) ? $_GET['project'] : false;
+        return isset($_POST['project']) ? $_POST['project'] : $project;
+    }
+
     protected function _view($view)
     {
         $file = DBV_ROOT_PATH . DS . 'templates' . DS . "$view.php";
@@ -461,6 +467,20 @@ class DBV
         }
     }
 
+    public function getProjects(){
+        $return = array();
+
+        foreach (new DirectoryIterator(DBV_PROJECT_PATH) as $file) {
+            if ($file->isDir() && !$file->isDot()) {
+                $return[] = $file->getBasename();
+            }
+        }
+
+        rsort($return, SORT_REGULAR);
+
+        return $return;
+    }
+
     public function findLastRevision(){
         return array_shift($this->_getRevisions());
     }
@@ -498,7 +518,7 @@ class DBV
     {
         header("Content-type: application/json");
         echo (is_string($data) ? $data : json_encode($data));
-        exit();
+        exit(PHP_EOL);
     }
 
     protected function _isXMLHttpRequest()

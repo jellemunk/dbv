@@ -48,7 +48,7 @@
                 <?php } ?>
             </tbody>
         </table>
-
+        <input type="hidden" name="project" value="<?php echo $this->_getProject(); ?>"/>
         <button data-role="create" class="btn btn-primary btn-mini"><?php echo __('Push to database'); ?></button>
         <button data-role="export" class="btn btn-primary btn-mini"><?php echo __('Export to disk'); ?></button>
     </form>

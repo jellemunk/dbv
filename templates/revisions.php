@@ -55,6 +55,7 @@
 				<?php } ?>
 			</tbody>
 		</table>
+		<input type="hidden" name="project" value="<?php echo $this->_getProject(); ?>"/>
 		<input type="submit" class="btn btn-primary" value="Run selected revisions" />
 	</form>
 	<br/>
@@ -62,12 +63,14 @@
 	<p> If you select a revision lower then the current one it will run the rollback script for every revision inbetween the current and the selected revision.
 	Place your rollback script in a folder 'rollback' within the revision folder. All scripts within that folder will be run.</p>
 	<form method="post" action="index.php?a=jumpto" class="nomargin" id="revisions">
+		
 		<select name="revision">
 			<?php foreach ($this->revisions as $revision): ?>
 				<option value="<?php echo $revision;?>" <?php echo ($this->revision == $revision)? 'selected' : ''?>>Revision <?php echo $revision;?></option> 
 			<?php endforeach;?>
 			<option value="0">Revision 0</option>
 		</select>
+		<input type="hidden" name="project" value="<?php echo $this->_getProject(); ?>"/>
 		<input type="submit" class="btn btn-primary" value="GO" />
 
 	</form>

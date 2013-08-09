@@ -36,6 +36,7 @@
 		</div>
 	</div>
 	<div id="content" class="container">
+	<? if($this->_getProject()) : ?>
 		<div id="log" style="margin: 20px 0 -10px 0;">
 			<?php $this->_view('log'); ?>
 		</div>
@@ -51,6 +52,28 @@
 				</div>
 			</div>
 		</div>
+	<? else:?>
+		<form action="" method="GET">
+			
+		<table class="table table-condensed table-striped table-bordered">
+			<thead>
+				<tr>
+					<th><?php echo __('Select project'); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr><td>
+			
+			<select name="project">
+				<?php foreach ($this->getProjects() as $project): ?>
+					<option value="<?php echo $project;?>" ><?php echo $project;?></option> 
+				<?php endforeach;?>
+				<input type="submit" class="btn btn-primary" value="GO" />
+
+			</select>
+			</td></tr>
+		</form>
+	<? endif;?>
 	</div>
 </body>
 </html>
