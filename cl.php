@@ -38,7 +38,8 @@ if($argv[2] === 'last'){
     if($rev){
     	$_POST['revision'] = $rev;
     }else{
-    	die("Could not find revision\n");
+    	$_POST['revision'] = $dbv->findLastRevision();
+		$_POST['commit'] = $argv[3];
     }
 }else{
 	die("No valid arguments found.  Please use 'last', 'rev' or 'commit'\n");
