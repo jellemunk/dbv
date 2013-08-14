@@ -182,9 +182,13 @@ class DBV
         $final_revision = isset($_POST['revision']) ? intval($_POST['revision']) : 0;
         $current_revision = $this->_getCurrentRevision();
         $revisions = $this->_getRevisions();
-            
+        if($current_revision > $final_revision){
+            rsort($revisions, SORT_NUMERIC);
+        }else{
+            sort($revisions, SORT_NUMERIC);
+        }
         foreach($revisions as $revision){
-
+            $revision = intval($revision);
             //move forward
             if($revision > $current_revision && $revision <= $final_revision){
                 
@@ -382,7 +386,7 @@ class DBV
 
         foreach (new DirectoryIterator(DBV_REVISIONS_PATH) as $file) {
             if ($file->isDir() && !$file->isDot() && is_numeric($file->getBasename())) {
-                $return[] = $file->getBasename();
+                $return[] = intval($file->getBasename());
             }
         }
 
