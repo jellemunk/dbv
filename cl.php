@@ -29,21 +29,78 @@ if(!file_exists(DBV_ROOT_PATH . DS . DBV_BEFORE_PROJECT_PATH . $_GET['project'] 
 }
 
 if($argv[2] === 'last'){
-	$_POST['revision'] = $dbv->findLastRevision();
-	$_POST['commit'] = $argv[3];
+	$final_revision = $dbv->findLastRevision();
+	$commit = $argv[3];
 }elseif($argv[2] === 'rev' && $argv[3]){
-	$_POST['revision'] = $argv[3];
+	$final_revision = $argv[3];
 }elseif($argv[2] === 'commit' && $argv[3]){
 	$rev = $dbv->findRevisionFromCommit($argv[3]);
     if($rev){
-    	$_POST['revision'] = $rev;
+    	$final_revision = $rev;
     }else{
-    	$_POST['revision'] = $dbv->findLastRevision();
-		$_POST['commit'] = $argv[3];
+    	$final_revision = $dbv->findLastRevision();
+		$commit = $argv[3];
     }
 }else{
 	die("No valid arguments found.  Please use 'last', 'rev' or 'commit'\n");
 }
 
-$dbv->authenticate();
-$dbv->dispatch();
+
+    
+    $current_revision = $dbv->_getCurrentRevision();
+    $all_revisions = $dbv->_getRevisions();
+    $revisions = array();
+    foreach($all_revisions as $revision){
+    	if(($revision > $current_revision && $revision <= $final_revision) || ($revision <= $current_revision && $revision > $final_revision) ){
+    		array_push($revisions, $revision);
+    	}
+    }
+    if(count($revisions) === 0){
+    	die('Database is uptodate at revision:' . $current_revision . '. No new revisions to execute.');
+    }    
+    if($current_revision > $final_revision){
+        $rollback = true;
+        rsort($revisions, SORT_NUMERIC);
+    }else{
+        $rollback = false;
+        sort($revisions, SORT_NUMERIC);
+    }
+
+    foreach($revisions as $revision){
+        
+        if (count($files)) {
+        	$error = false;
+            if($rollback){
+            	$files = $dbv->_getRevisionRollbackFiles($revision);
+                $path = DBV_REVISIONS_PATH . DS . $revision . DS . 'rollback';
+                $type = 'executing rollback of';
+            }else{
+            	$files = $dbv->_getRevisionFiles($revision);
+            	$path = DBV_REVISIONS_PATH . DS . $revision;
+            	$type = 'executing';
+            }
+        	
+        	//execute files
+            foreach ($files as $file) {
+                $file = $path . DS . $file;
+                if (!$dbv->_runFile($file)) {
+                    $dbv->error('Error ' . $type . ' revision:' . $revision . ' in file' . $file);
+                	$error = true;
+                }
+            }
+            if(!$error){
+            	$dbv->confirm('Succes ' .  $type . ' revision:' . $revision);
+            }
+        }
+    }    
+    
+    $dbv->_setCurrentRevision($final_revision);
+    $return = array(
+            'messages' => array(),
+            'revision' => $dbv->_getCurrentRevision()
+    );
+        
+    foreach ($dbv->_log as $message) {
+        $return['messages'][$message['type']][] = $message['message'];
+    }
+    $dbv->_json($return);
