@@ -27,7 +27,9 @@ $dbv = DBV::instance();
 if(!file_exists(DBV_ROOT_PATH . DS . DBV_BEFORE_PROJECT_PATH . $_GET['project'] . DS . DBV_AFTER_PROJECT_PATH . 'configuration.php') && !file_exists($_GET['project'] . DS . 'configuration.php') ){
 	die("No valid project name\n");
 }
-
+if(!file_exists(DBV_DATA_PATH)){
+    die("No data folder found\n");
+}
 if($argv[2] === 'last'){
 	$_POST['revision'] = $dbv->findLastRevision();
 	$_POST['commit'] = $argv[3];
